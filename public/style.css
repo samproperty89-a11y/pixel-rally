@@ -9,3 +9,5 @@
 @media(max-width:420px){aside{grid-template-columns:1fr}.feed-panel{grid-column:auto}.race-meta{display:none}}
 /* Keep per-stage charges visible on desktop, tablets and phones. */
 .skills em{display:block;white-space:nowrap;color:#c7ebaf;font-weight:700}
+
+.models{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;max-height:330px;overflow-y:auto;padding:3px}.models button{min-width:0;padding:5px 2px;background:#16251d}.models canvas{width:36px;height:50px;margin:auto;object-fit:contain;image-rendering:pixelated}.models small{display:block;font-size:8px;line-height:1.3;margin-top:4px;letter-spacing:0}.models button.selected{border:2px solid #ffd95a;background:#47502b}.models button:hover{background:#354835}
