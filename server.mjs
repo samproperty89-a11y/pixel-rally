@@ -7,7 +7,7 @@ const rooms=new Map(), sessions=new Map(), streams=new Map();
 const token=()=>randomBytes(18).toString('hex');
 const now=()=>Date.now();
 function trackFor(r){return tracks[r.stage||0]}
-function publicRoom(r){let {length}=trackFor(r);return{stage:r.stage||0,trackId:trackFor(r).id,trackName:trackFor(r).name,nextStageAt:r.nextStageAt||0,stageResults:r.stageResults||[],code:r.code,host:r.host,phase:r.phase,start:r.start,time:now(),laps:3,trackLength:length,rulesVersion:5,events:r.events.slice(-15),projectiles:r.projectiles||[],traps:r.traps||[],players:r.players.map(p=>({...p,token:undefined,lap:Math.max(1,Math.min(3,Math.floor(p.distance/length)+1))})).sort((a,b)=>(a.finish||Infinity)-(b.finish||Infinity)||b.distance-a.distance)}}
+function publicRoom(r){let {length}=trackFor(r);return{stage:r.stage||0,trackId:trackFor(r).id,trackName:trackFor(r).name,nextStageAt:r.nextStageAt||0,stageResults:r.stageResults||[],code:r.code,host:r.host,phase:r.phase,start:r.start,time:now(),laps:3,trackLength:length,rulesVersion:6,events:r.events.slice(-15),projectiles:r.projectiles||[],traps:r.traps||[],players:r.players.map(p=>({...p,token:undefined,lap:Math.max(1,Math.min(3,Math.floor(p.distance/length)+1))})).sort((a,b)=>(a.finish||Infinity)-(b.finish||Infinity)||b.distance-a.distance)}}
 function broadcast(r){let data=`data: ${JSON.stringify(publicRoom(r))}\n\n`;for(let [key,s] of streams)if(s.room===r)s.res.write(data)}
 function fail(message,status=400){throw Object.assign(new Error(message),{status})}
 function event(r,text,fx=null){r.events.push({text,time:now(),fx});r.events=r.events.slice(-20)}
@@ -49,7 +49,7 @@ function completeStage(r,t){
  if(!r.stage)r.nextStageAt=t+8000;
 }
 const raceCharges=Object.freeze({nitro:3,missile:3,shield:2,emp:1,oil:2,freeze:2});
-const trafficLanes=[-48,-16,16,48],safeGap=38,safeSide=26;
+const trafficLanes=[-66,-22,22,66],safeGap=38,safeSide=26;
 function trafficGap(a,b,lapLength=length){let gap=((b.distance-a.distance)%lapLength+lapLength)%lapLength;return gap<lapLength/2?gap:gap-lapLength}
 function sameRoad(a,b){return !!a.shortcut===!!b.shortcut}
 function advanceRace(r,t,dt){
@@ -70,7 +70,7 @@ function advanceRace(r,t,dt){
   let lane=p.lane+Math.max(-70*dt,Math.min(70*dt,target-p.lane));
   if(active.some(q=>q!==p&&sameRoad(p,q)&&Math.abs(gapBetween(p,q))<safeGap&&Math.abs(q.lane-p.lane)>=safeSide&&Math.abs(q.lane-lane)<safeSide))lane=p.lane;
   let style=[.988,1.006,1.018,.997,1.011,.992][r.players.indexOf(p)%6];
-  let speed=(220+(p.model==='buggy'?3:p.model==='van'?-3:0))*style*(1+Math.max(p.catchup,p.drafting?.08:0));
+  let speed=(340+(p.model==='buggy'?3:p.model==='van'?-3:0))*style*(1+Math.max(p.catchup,p.drafting?.08:0));
   if([7,8,17,18].includes(loc.segment))speed*=.86;
   if(loc.segment===1||(loc.segment===10&&!p.shortcut))speed*=1.22;
   if(p.boost>t)speed*=1.55;if(p.slow>t)speed*=.55;
